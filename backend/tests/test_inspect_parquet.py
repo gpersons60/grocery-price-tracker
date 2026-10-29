@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import datetime, timezone
 from pathlib import Path
 
 import pyarrow as pa
@@ -48,3 +49,23 @@ def test_inspection_handles_invalid_file(tmp_path: Path, capsys) -> None:
     assert main([str(invalid_path)]) != 0
 
     assert "Error: unable to read Parquet file" in capsys.readouterr().err
+
+
+def test_inspection_prints_timezone_aware_timestamp(tmp_path: Path, capsys) -> None:
+    parquet_path = tmp_path / "timestamps.parquet"
+    table = pa.table(
+        {
+            "observed_at": pa.array(
+                [datetime(2026, 10, 28, 12, 0, tzinfo=timezone.utc)],
+                type=pa.timestamp("us", tz="UTC"),
+            )
+        }
+    )
+    pq.write_table(table, parquet_path)
+
+    assert main([str(parquet_path)]) == 0
+
+    output = capsys.readouterr().out
+    assert "observed_at: timestamp[us, tz=UTC]" in output
+    assert "datetime.datetime(2026, 10, 28, 12, 0" in output
+    assert "zoneinfo.ZoneInfo(key='UTC')" in output
