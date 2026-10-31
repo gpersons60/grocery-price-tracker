@@ -24,8 +24,8 @@ Build maintainable, scalable foundations while keeping the MVP intentionally sma
 - [ ] Review current `git status -sb` and plan a documentation/setup commit when ready.
 
 ## Week 1 — Data pipeline and DynamoDB
-- [ ] Inspect a real Open Prices Parquet export schema and sample records with a local Python utility.
-- [ ] Choose/finalize small Nancy barcode/store list and source-field mapping.
+- [x] Inspect a real Open Prices Parquet export schema and sample records with a local Python utility.
+- [x] Choose/finalize small Nancy barcode/store list and source-field mapping.
 - [x] Implement local filtering, validation, and normalization with focused tests. Record-based idempotency/corrections remain part of the later persistence stage.
 - [ ] Create/configure DynamoDB tables and GSI, respecting minimal AWS permissions.
 - [ ] Integrate ingestion with Lambda and EventBridge Scheduler; verify initial import and safe repeated runs.

@@ -57,6 +57,17 @@ EventBridge emits a scheduled invocation event; this is batch processing, not st
 
 Query one product and one physical store by GSI, with sort-key date ranges for historical windows. Retrieve the newest indexed observation per store for comparison. DynamoDB GSIs are eventually consistent; brief indexing delay is acceptable for historical data. Handle pagination if the query size requires it.
 
+The persistence layer writes `sourceObservationId` as the table partition key and
+uses `ProductStoreDateIndex` with `productStoreKey` (`barcode#storeId`) and
+`observationSortKey` (`observedDate#sourceObservationId`). Source update timestamps
+are compared as integer UTC epoch microseconds in `sourceVersion`, preserving
+fractional-second ordering. Conditional updates insert new IDs, accept only newer
+versions, and replace all indexed attributes when a correction moves an observation
+to another date or store. Records without a source update timestamp may be inserted
+but never overwrite an existing record. GSI reads are eventually consistent.
+Automatic source-deletion reconciliation is deferred, and corrections that move
+records outside the curated selection are not ingested by this stage.
+
 The source observation ID is the primary identity for upsert. Use conditional writes or equivalent safe logic to prevent older source updates overwriting newer corrections. If a corrected record changes product/store/date, verify that the index attributes update consistently.
 
 ## Stats and correctness
