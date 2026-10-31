@@ -5,6 +5,15 @@ Status: Project foundation. Updated 2026-10-28.
 ## Timeline and working agreement
 Target: 2–3 focused development weeks, with implementation, testing, review and deployment. Schedule is a target, not a guarantee. Preserve the agreed MVP; streamline implementation and defer deep theory before proposing scope changes. Continue LeetCode/interview preparation separately.
 
+## Engineering Objectives and Skills
+Build maintainable, scalable foundations while keeping the MVP intentionally small:
+
+- Develop a Python backend for ETL, validation, and scheduled batch processing.
+- Practice AWS serverless architecture, DynamoDB access-pattern design, REST APIs, and React frontend integration.
+- Apply scalable ingestion concepts such as idempotency, source-data corrections, reliability, and honest handling of partial data.
+- Strengthen automated testing, Git workflow, cloud deployment, and monitoring skills.
+- Prefer simple, proportionate infrastructure over unnecessary services or premature optimization; AWS SAM and GitHub Actions remain deferred.
+
 ## Completed setup
 - [x] MVP concept and architecture reviewed with friend.
 - [x] Repository created and cloned: `gpersons60/grocery-price-tracker` (`main`).

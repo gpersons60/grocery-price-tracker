@@ -21,6 +21,21 @@ Status: Initial decisions approved; update deliberately if evidence changes. Upd
 | Manual AWS deployment for MVP; defer SAM and GitHub Actions | Prioritize core AWS concepts within 2–3 weeks. Document setup for reproducibility. |
 | No automatic source-deletion reconciliation initially | Avoid dangerous deletes/complex sync; disclose limitation. |
 | No accounts, alerts, WebSockets, Kafka, or complex analytics | These are outside the approved MVP and better suited to later projects. |
+| Fixed Nancy catalogue for the MVP | A version-controlled set of 17 recognizable packaged products and 5 physical store IDs keeps the first ingestion and user experience focused and reproducible. |
+| Uneven store coverage is retained | Open Prices observations are concentrated in a few Nancy locations and dates; we preserve source store IDs rather than merging suspected duplicate OSM locations or inventing coverage. |
+| 90-day history is the default chart window | Analysis showed useful recent coverage for many candidates while still requiring honest empty or sparse states; `1y` and `all` remain available for older observations. |
+
+## Catalogue and observation caveats
+
+The curated catalogue is intentionally fixed in
+[`backend/ingestion/curated_catalog.json`](../backend/ingestion/curated_catalog.json)
+and uses source physical store IDs as strings. Suspected duplicate locations remain
+separate until there is evidence and an explicit identity-mapping decision.
+
+Barcode-based `PRODUCT` observations may have a null `price_per`. A missing value is
+reported as source data and must not, by itself, cause an observation to be rejected.
+The catalogue does not assume that a missing `price_per` means `UNIT`; that validation
+decision belongs to a later ingestion implementation.
 
 ## Pending implementation choices
 - Specific source column mapping and final catalog/location identifiers.
