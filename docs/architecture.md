@@ -7,7 +7,7 @@ Status: Approved high-level design, to be validated incrementally while building
 - Trigger: Amazon EventBridge Scheduler, once daily.
 - Dataset: Open Prices Parquet export; initially filter to curated products and physical stores in Nancy, France.
 - Database: Amazon DynamoDB (on-demand capacity), with two tables and a GSI.
-- HTTP: Amazon API Gateway HTTP API invoking one read-only API Lambda (three routes).
+- HTTP: Amazon API Gateway HTTP API invoking one read-only API Lambda (four routes).
 - Frontend: React, with TanStack Query for client-side API caching and a history chart library chosen during implementation.
 - Static hosting: Private S3 bucket through CloudFront (use Origin Access Control).
 - Operations: CloudWatch logs/basic failure monitoring, least-privilege IAM, and a small AWS Budget alert (alert is NOT a spending cap).

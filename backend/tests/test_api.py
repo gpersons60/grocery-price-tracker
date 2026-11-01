@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import base64
 from datetime import date
 from decimal import Decimal
 from typing import Any
@@ -87,7 +88,11 @@ def test_history_filters_dates_and_preserves_decimal_values() -> None:
         query_pages=[
             {
                 "Items": [observation("1", "2026-10-01", "1.230")],
-                "LastEvaluatedKey": {"sourceObservationId": "1"},
+                "LastEvaluatedKey": {
+                    "sourceObservationId": "1",
+                    "productStoreKey": "123#271",
+                    "observationSortKey": "2026-10-01#1",
+                },
             },
             {"Items": [observation("2", "2026-10-20", "2.50")]},
         ]
@@ -129,7 +134,9 @@ def test_history_filters_dates_and_preserves_decimal_values() -> None:
     assert [item["price"] for item in next_result["observations"]] == ["2.50"]
     assert "continuationToken" not in next_result
     assert observations.query_calls[1]["ExclusiveStartKey"] == {
-        "sourceObservationId": "1"
+        "sourceObservationId": "1",
+        "productStoreKey": "123#271",
+        "observationSortKey": "2026-10-01#1",
     }
 
 
@@ -163,6 +170,54 @@ def test_history_rejects_malformed_and_mismatched_tokens() -> None:
         service(
             FakeTable(scan_pages=[{"Items": [product()]}]), FakeTable()
         ).history("123", "271", page_size="20", continuation_token=token)
+
+
+@pytest.mark.parametrize(
+    "key_update",
+    [
+        {"unexpected": "value"},
+        {"productStoreKey": "999#271"},
+        {"sourceObservationId": 123},
+        {"observationSortKey": "not-a-sort-key"},
+    ],
+)
+def test_history_rejects_tampered_token_keys(key_update: dict[str, Any]) -> None:
+    observations = FakeTable(
+        query_pages=[
+            {
+                "Items": [observation("1", "2026-10-20", "1.20")],
+                "LastEvaluatedKey": {
+                    "sourceObservationId": "1",
+                    "productStoreKey": "123#271",
+                    "observationSortKey": "2026-10-20#1",
+                },
+            }
+        ]
+    )
+    service_instance = service(
+        FakeTable(scan_pages=[{"Items": [product()]}]), observations
+    )
+    token = service_instance.history("123", "271", page_size="10")[
+        "continuationToken"
+    ]
+    padded = token + "=" * (-len(token) % 4)
+    payload = json.loads(base64.urlsafe_b64decode(padded))
+    payload["lastEvaluatedKey"].update(key_update)
+    tampered = base64.urlsafe_b64encode(
+        json.dumps(payload, separators=(",", ":")).encode()
+    ).decode().rstrip("=")
+
+    with pytest.raises(ApiValidationError):
+        service(
+            FakeTable(scan_pages=[{"Items": [product()]}]), FakeTable()
+        ).history("123", "271", continuation_token=tampered)
+
+
+def test_history_rejects_oversized_token() -> None:
+    with pytest.raises(ApiValidationError):
+        service(
+            FakeTable(scan_pages=[{"Items": [product()]}]), FakeTable()
+        ).history("123", "271", continuation_token="a" * 4097)
 
 
 def test_empty_history_returns_null_statistics() -> None:

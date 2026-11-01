@@ -5,6 +5,7 @@ from __future__ import annotations
 import base64
 import binascii
 import json
+import re
 from datetime import date, timedelta
 from decimal import Decimal
 from typing import Any, Callable
@@ -16,6 +17,8 @@ from . import data_access
 PERIOD_DAYS = {"30d": 30, "90d": 90, "1y": 365, "all": None}
 DEFAULT_PAGE_SIZE = 100
 MAX_PAGE_SIZE = 1000
+MAX_CONTINUATION_TOKEN_LENGTH = 4096
+_SORT_KEY_PATTERN = re.compile(r"^\d{4}-\d{2}-\d{2}#.+$")
 
 
 class ApiValidationError(ValueError):
@@ -198,15 +201,43 @@ class ApiService:
     ) -> dict[str, Any] | None:
         if token is None:
             return None
+        if (
+            not token
+            or len(token) > MAX_CONTINUATION_TOKEN_LENGTH
+            or not re.fullmatch(r"[A-Za-z0-9_-]+", token)
+        ):
+            raise ApiValidationError("continuationToken is malformed")
         try:
             padded = token + "=" * (-len(token) % 4)
             payload = json.loads(base64.urlsafe_b64decode(padded).decode())
-            if payload["context"] != expected_context:
+            if (
+                not isinstance(payload, dict)
+                or payload.get("context") != expected_context
+            ):
                 raise ApiValidationError(
                     "continuationToken does not match the requested history"
                 )
-            key = payload["lastEvaluatedKey"]
-            if not isinstance(key, dict) or not key:
+            key = payload.get("lastEvaluatedKey")
+            if not isinstance(key, dict):
+                raise ValueError
+            if set(key) != {
+                "sourceObservationId",
+                "productStoreKey",
+                "observationSortKey",
+            }:
+                raise ValueError
+            if not all(isinstance(value, str) for value in key.values()):
+                raise ValueError
+            if (
+                not key["sourceObservationId"]
+                or key["productStoreKey"] != (
+                    f"{expected_context['barcode']}#{expected_context['storeId']}"
+                )
+                or not _SORT_KEY_PATTERN.fullmatch(key["observationSortKey"])
+                or not key["observationSortKey"].endswith(
+                    f"#{key['sourceObservationId']}"
+                )
+            ):
                 raise ValueError
             return key
         except (
