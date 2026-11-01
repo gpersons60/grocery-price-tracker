@@ -1,0 +1,104 @@
+{
+  "market": {
+    "city": "Nancy",
+    "country_code": "FR",
+    "currency": "EUR"
+  },
+  "stores": [
+    {
+      "id": "271",
+      "name": "Auchan",
+      "address": "Boulevard Lobau"
+    },
+    {
+      "id": "3241",
+      "name": "E.Leclerc Drive",
+      "address": "Rue Saint-Dizier"
+    },
+    {
+      "id": "5395",
+      "name": "E.Leclerc",
+      "address": "Rue Jean Scherbeck"
+    },
+    {
+      "id": "3471",
+      "name": "Carrefour City",
+      "address": "Avenue de Strasbourg"
+    },
+    {
+      "id": "3744",
+      "name": "E.Leclerc Express",
+      "address": "Rue Dom Calmet"
+    }
+  ],
+  "products": [
+    {
+      "barcode": "3256540000346",
+      "name": "Brioche Pasquier Croissants x16, 640g"
+    },
+    {
+      "barcode": "3587220002252",
+      "name": "La Fournée Dorée Sliced Butter Brioche, 500g"
+    },
+    {
+      "barcode": "3168930163480",
+      "name": "Alvalle Original Gazpacho, 1L"
+    },
+    {
+      "barcode": "8076808890015",
+      "name": "Barilla Collezione Tortellini, 250g"
+    },
+    {
+      "barcode": "3564700395707",
+      "name": "Chocolate Soy Dessert, 4x100g"
+    },
+    {
+      "barcode": "3564700004821",
+      "name": "Jardin Peas and Carrots, 265g"
+    },
+    {
+      "barcode": "3564709197142",
+      "name": "Castelnaud Cassoulet with Pork, 840g"
+    },
+    {
+      "barcode": "3564700005026",
+      "name": "Jardin Flageolet Beans, 265g"
+    },
+    {
+      "barcode": "3083680002929",
+      "name": "Bonduelle Mixed Vegetables, 265g"
+    },
+    {
+      "barcode": "3564700397602",
+      "name": "Apple Purée, No Added Sugar, 4x100g"
+    },
+    {
+      "barcode": "3564709197104",
+      "name": "Castelnaud Cassoulet with Pork, 420g"
+    },
+    {
+      "barcode": "3564709174631",
+      "name": "Tomato Juice, 1L"
+    },
+    {
+      "barcode": "3564700640340",
+      "name": "Epi d'Or Partially Baked Bread, 300g"
+    },
+    {
+      "barcode": "3660603081867",
+      "name": "Benedicta Natural Mayonnaise, 510g"
+    },
+    {
+      "barcode": "3302740047367",
+      "name": "Fleury Ham, 4 Slices, 140g"
+    },
+    {
+      "barcode": "3021690201123",
+      "name": "Raynal & Roquelaure Auvergne Lentils, 410g"
+    },
+    {
+      "barcode": "3564700330838",
+      "name": "Grated Fresh Carrots, 500g"
+    }
+  ]
+}

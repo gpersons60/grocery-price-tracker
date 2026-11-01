@@ -1,0 +1,4 @@
+pyarrow
+pytest
+tzdata
+boto3

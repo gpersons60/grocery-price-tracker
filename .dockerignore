@@ -1,0 +1,16 @@
+.git
+.github
+.venv
+__pycache__
+*.py[cod]
+.pytest_cache
+.coverage
+.env
+.env.*
+data
+dist
+node_modules
+backend/tests
+Dockerfile
+README.md
+docs
