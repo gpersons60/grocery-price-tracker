@@ -1,6 +1,6 @@
 # Grocery Price Comparison & History Tracker — Requirements
 
-Status: MVP concept approved; implementation not yet started. Updated 2026-10-28.
+Status: MVP concept approved; backend ingestion and read-only API implemented. Updated 2026-11-01.
 
 ## Goal and users
 Build a small, deployed serverless application that helps users compare real **historical observed** grocery prices and demonstrates practical AWS, data-pipeline, NoSQL, REST API, frontend, caching, testing, and Git skills for software engineering internship applications.
@@ -30,18 +30,21 @@ Authentication, user accounts, alerts, promotions/sale detection, deal rankings,
 - Automatic reconciliation of deleted/retracted upstream observations is deferred. Disclose that retained data may not perfectly mirror upstream deletions.
 - Prices are crowdsourced historical observations; their collection date differs from ingestion and source-update dates.
 
-## Draft API behavior
-- `GET /api/products` — curated catalog.
-- `GET /api/products/{barcode}/prices` — most recently observed price per configured physical store, with dates.
-- `GET /api/products/{barcode}/history?storeId=<id>&period=90d` — ordered observation points and record-based statistics; periods: `30d`, `90d`, `1y`, `all`.
+## API behavior
+- `GET /products` — curated catalog with product barcodes and names.
+- `GET /stores` — curated physical store catalogue with IDs, names, and addresses.
+- `GET /products/{barcode}/comparison` — the most recent available observation for each curated store with data.
+- `GET /products/{barcode}/history?storeId=<id>&period=90d&pageSize=100&continuationToken=<token>` — ordered observation points and page-scoped record-based statistics; periods: `30d`, `90d`, `1y`, `all`.
+- History requires `storeId`; `period` defaults to `90d`; `pageSize` defaults to 100 and is bounded by the API; `continuationToken` retrieves the next page when more observations exist.
 - Successful empty history periods return `200` with an empty observations array and null/unavailable stats. Invalid query parameters return `400`; unknown barcodes `404`; unexpected server failures `500`.
+- Backend history statistics currently describe only the observations in the returned page, not the complete requested period. The frontend must retrieve all available history pages for the selected product, store, and period before calculating complete-period statistics with decimal-safe arithmetic. Page statistics must not be treated as full-period statistics.
 - These are public, read-only HTTP endpoints; ingestion is not a public API.
 
 ## Acceptance criteria
 - The local Parquet reader can inspect a real file and process selected records without loading the entire dataset eagerly.
 - Validation, filtering, transformations, idempotent ingest, and correction rules have focused automated tests.
 - A cloud ingestion run populates DynamoDB with useful real observations and subsequent runs do not create duplicates.
-- The three REST endpoints serve correct data, including history windows, timestamps, and empty/error states.
+- The four REST endpoints serve correct data, including history windows, timestamps, pagination, and empty/error states.
 - The React site can compare products, view history and statistics, and clearly identifies observations as historical.
 - The project is deployed, a reviewer can access a live demonstration, and the README explains setup, architecture, limitations, tests, and licensing attribution.
 - Key tests run successfully and no credentials or downloaded datasets are committed.

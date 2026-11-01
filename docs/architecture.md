@@ -7,7 +7,7 @@ Status: Approved high-level design, to be validated incrementally while building
 - Trigger: Amazon EventBridge Scheduler, once daily.
 - Dataset: Open Prices Parquet export; initially filter to curated products and physical stores in Nancy, France.
 - Database: Amazon DynamoDB (on-demand capacity), with two tables and a GSI.
-- HTTP: Amazon API Gateway HTTP API invoking one read-only API Lambda (three routes).
+- HTTP: Amazon API Gateway HTTP API invoking one read-only API Lambda (four routes).
 - Frontend: React, with TanStack Query for client-side API caching and a history chart library chosen during implementation.
 - Static hosting: Private S3 bucket through CloudFront (use Origin Access Control).
 - Operations: CloudWatch logs/basic failure monitoring, least-privilege IAM, and a small AWS Budget alert (alert is NOT a spending cap).
@@ -53,12 +53,12 @@ EventBridge emits a scheduled invocation event; this is batch processing, not st
 ### Table `PriceObservations`
 - Partition key: `sourceObservationId` (String), e.g. `OPEN_PRICES#12345`.
 - Attributes: `barcode` (String), `storeId` (String), `price` (decimal-safe DynamoDB Number), `currency`, `observedDate` (`YYYY-MM-DD`), `sourceUpdatedAt` (comparable ISO timestamp), `productStoreKey` (`barcode#storeId`), `observationSortKey` (`YYYY-MM-DD#sourceObservationId`). Store names may be supplied by curated catalog metadata rather than repeated in every row.
-- GSI `ProductStoreDateIndex`: partition `productStoreKey`, sort `observationSortKey`, with projections sufficient for history responses.
+- GSI `ProductStoreHistoryIndex`: partition `productStoreKey`, sort `observationSortKey`, with projections sufficient for history responses.
 
-Query one product and one physical store by GSI, with sort-key date ranges for historical windows. Retrieve the newest indexed observation per store for comparison. DynamoDB GSIs are eventually consistent; brief indexing delay is acceptable for historical data. Handle pagination if the query size requires it.
+Query one product and one physical store by GSI, with sort-key date ranges for historical windows. Retrieve the newest indexed observation per store for comparison. DynamoDB GSIs are eventually consistent; brief indexing delay is acceptable for historical data. The API returns bounded history pages through `pageSize` and an opaque continuation token; the frontend retrieves all pages before calculating complete-period statistics.
 
 The persistence layer writes `sourceObservationId` as the table partition key and
-uses `ProductStoreDateIndex` with `productStoreKey` (`barcode#storeId`) and
+uses `ProductStoreHistoryIndex` with `productStoreKey` (`barcode#storeId`) and
 `observationSortKey` (`observedDate#sourceObservationId`). Source update timestamps
 are compared as integer UTC epoch microseconds in `sourceVersion`, preserving
 fractional-second ordering. Conditional updates insert new IDs, accept only newer
@@ -71,7 +71,7 @@ records outside the curated selection are not ingested by this stage.
 The source observation ID is the primary identity for upsert. Use conditional writes or equivalent safe logic to prevent older source updates overwriting newer corrections. If a corrected record changes product/store/date, verify that the index attributes update consistently.
 
 ## Stats and correctness
-- Compute period stats in the API from selected observed records (small MVP dataset), using decimal-safe arithmetic before JSON serialization.
+- Compute page-scoped stats in the API from selected observed records, using decimal-safe arithmetic before JSON serialization. The frontend retrieves all history pages and recomputes complete-period stats with decimal-safe arithmetic.
 - Mean is `sum(prices) / count(observations)`, not time-weighted. No filling missing days.
 - Sort date-plus-ID consistently; separate observed date, source-updated timestamp, and ingestion time.
 - Do not present unobserved prices as zero or imply latest observation is current shelf price.
