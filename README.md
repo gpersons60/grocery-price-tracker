@@ -68,6 +68,9 @@ opaque `continuationToken`. The token is bound to the barcode, store, period,
 date bounds, and page size, and malformed or mismatched tokens return 400.
 History statistics (`latestPrice`, minimum, maximum, mean, and count) describe
 only the observations in the returned page, not the entire requested period.
+The frontend should retrieve all available pages for the selected product, store,
+and period, then calculate complete-period statistics with decimal-safe
+arithmetic; it must not treat a single page's statistics as period-wide.
 History and comparison
 reads use the `ProductStoreHistoryIndex` GSI, whose reads are eventually
 consistent, so a newly ingested observation may be briefly absent. Retained

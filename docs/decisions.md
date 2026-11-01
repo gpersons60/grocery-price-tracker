@@ -14,7 +14,7 @@ Status: Initial decisions approved; update deliberately if evidence changes. Upd
 | ProductStoreHistoryIndex GSI | Supports efficient store/product history queries and latest observation retrieval. |
 | Store original observed date and source update timestamp separately | Avoids confusing a dated observation with when it was edited or imported. |
 | Decimal-safe prices and arithmetic mean per observed record | Prevents float errors and mislabelled time-weighted averages. |
-| Three public read-only REST endpoints with one API Lambda | Delivers needed behaviors without extra Lambda fragmentation. |
+| Four public read-only REST endpoints with one API Lambda | Delivers catalogue, store, comparison, and history behaviors without extra Lambda fragmentation. |
 | React + TanStack Query | Familiar client UI and practical server-state caching. |
 | Private S3 + CloudFront | Demonstrates static asset delivery and basic cloud distribution securely. |
 | Focused tests, feature branches, GitHub documentation | Preserves fundamental software engineering quality for a portfolio. |
@@ -24,6 +24,7 @@ Status: Initial decisions approved; update deliberately if evidence changes. Upd
 | Fixed Nancy catalogue for the MVP | A version-controlled set of 17 recognizable packaged products and 5 physical store IDs keeps the first ingestion and user experience focused and reproducible. |
 | Uneven store coverage is retained | Open Prices observations are concentrated in a few Nancy locations and dates; we preserve source store IDs rather than merging suspected duplicate OSM locations or inventing coverage. |
 | 90-day history is the default chart window | Analysis showed useful recent coverage for many candidates while still requiring honest empty or sparse states; `1y` and `all` remain available for older observations. |
+| Frontend aggregates paginated history before period statistics | The API returns page-scoped statistics to keep responses bounded; the frontend must retrieve every page for the selected product, store, and period and calculate complete-period statistics with decimal-safe arithmetic. |
 
 ## Catalogue and observation caveats
 
