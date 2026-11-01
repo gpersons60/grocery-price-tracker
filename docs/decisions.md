@@ -11,7 +11,7 @@ Status: Initial decisions approved; update deliberately if evidence changes. Upd
 | Schedule one batch ingestion per day with EventBridge -> Lambda | Demonstrates cloud-triggered, event-driven batch processing without Kafka or queues. |
 | Separate Products and PriceObservations DynamoDB tables | Simple mental model: tiny curated catalog plus potentially growing observations. |
 | Observation source ID as main primary key | Enables idempotent imports and source corrections. |
-| ProductStoreDateIndex GSI | Supports efficient store/product history queries and latest observation retrieval. |
+| ProductStoreHistoryIndex GSI | Supports efficient store/product history queries and latest observation retrieval. |
 | Store original observed date and source update timestamp separately | Avoids confusing a dated observation with when it was edited or imported. |
 | Decimal-safe prices and arithmetic mean per observed record | Prevents float errors and mislabelled time-weighted averages. |
 | Three public read-only REST endpoints with one API Lambda | Delivers needed behaviors without extra Lambda fragmentation. |

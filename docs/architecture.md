@@ -53,12 +53,12 @@ EventBridge emits a scheduled invocation event; this is batch processing, not st
 ### Table `PriceObservations`
 - Partition key: `sourceObservationId` (String), e.g. `OPEN_PRICES#12345`.
 - Attributes: `barcode` (String), `storeId` (String), `price` (decimal-safe DynamoDB Number), `currency`, `observedDate` (`YYYY-MM-DD`), `sourceUpdatedAt` (comparable ISO timestamp), `productStoreKey` (`barcode#storeId`), `observationSortKey` (`YYYY-MM-DD#sourceObservationId`). Store names may be supplied by curated catalog metadata rather than repeated in every row.
-- GSI `ProductStoreDateIndex`: partition `productStoreKey`, sort `observationSortKey`, with projections sufficient for history responses.
+- GSI `ProductStoreHistoryIndex`: partition `productStoreKey`, sort `observationSortKey`, with projections sufficient for history responses.
 
 Query one product and one physical store by GSI, with sort-key date ranges for historical windows. Retrieve the newest indexed observation per store for comparison. DynamoDB GSIs are eventually consistent; brief indexing delay is acceptable for historical data. Handle pagination if the query size requires it.
 
 The persistence layer writes `sourceObservationId` as the table partition key and
-uses `ProductStoreDateIndex` with `productStoreKey` (`barcode#storeId`) and
+uses `ProductStoreHistoryIndex` with `productStoreKey` (`barcode#storeId`) and
 `observationSortKey` (`observedDate#sourceObservationId`). Source update timestamps
 are compared as integer UTC epoch microseconds in `sourceVersion`, preserving
 fractional-second ordering. Conditional updates insert new IDs, accept only newer

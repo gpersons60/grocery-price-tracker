@@ -31,10 +31,10 @@ Build maintainable, scalable foundations while keeping the MVP intentionally sma
 - [ ] Integrate ingestion with Lambda and EventBridge Scheduler; verify initial import and safe repeated runs.
 
 ## Week 2 — Public read-only REST API
-- [ ] Implement products endpoint and basic API Gateway/Lambda integration.
-- [ ] Implement latest observed store price comparison endpoint.
-- [ ] Implement store-scoped history endpoint and selected-period statistics.
-- [ ] Test happy path, validation, empty data, and source corrections through API/data layers.
+- [x] Implement products endpoint and basic API Gateway/Lambda integration.
+- [x] Implement latest observed store price comparison endpoint.
+- [x] Implement store-scoped history endpoint and selected-period statistics.
+- [x] Test happy path, validation, empty data, pagination, and date filtering through API/data layers.
 
 ## Week 3 — Frontend, deployment, and portfolio polish
 - [ ] Build React catalog/comparison/history UI and dated-observation labeling.
