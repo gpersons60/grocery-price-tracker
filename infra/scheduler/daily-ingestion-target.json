@@ -1,0 +1,9 @@
+{
+    "Arn": "arn:aws:lambda:us-east-2:102429469952:function:grocery-price-ingestion",
+    "RoleArn": "arn:aws:iam::102429469952:role/grocery-price-scheduler-role",
+    "Input": "{}",
+    "RetryPolicy": {
+        "MaximumRetryAttempts": 2,
+        "MaximumEventAgeInSeconds": 3600
+    }
+}
