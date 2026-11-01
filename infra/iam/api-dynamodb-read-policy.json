@@ -1,0 +1,17 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "ReadProducts",
+            "Effect": "Allow",
+            "Action": "dynamodb:Scan",
+            "Resource": "arn:aws:dynamodb:us-east-2:102429469952:table/Products"
+        },
+        {
+            "Sid": "ReadPriceHistory",
+            "Effect": "Allow",
+            "Action": "dynamodb:Query",
+            "Resource": "arn:aws:dynamodb:us-east-2:102429469952:table/PriceObservations/index/ProductStoreHistoryIndex"
+        }
+    ]
+}
