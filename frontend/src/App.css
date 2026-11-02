@@ -352,6 +352,10 @@ button:hover {
   margin-bottom: 1.5rem;
 }
 
+.chart-loading {
+  margin-bottom: 1.5rem;
+}
+
 .statistics {
   margin-bottom: 1.5rem;
   padding: 1rem;

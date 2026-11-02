@@ -44,13 +44,14 @@ Build maintainable, scalable foundations while keeping the MVP intentionally sma
 - [x] Build Milestone 3A: historical price API integration, complete pagination, and period selection.
 - [x] Build Milestone 3B: interactive historical price charts.
 - [x] Build Milestone 3C: complete-period historical price statistics.
-- [ ] Add TanStack Query caching and time-filter behavior.
+- [x] Add TanStack Query caching and time-filter behavior.
+- [x] Build Milestone 4A: lazy-load chart code and split Recharts from the initial bundle.
 - [ ] Deploy frontend to private S3 behind CloudFront; connect public API.
 - [ ] Verify complete live system; troubleshoot reliability, security, and reasonable AWS costs.
 - [ ] Finish README with architecture, setup/deployment instructions, testing, limitations, data attribution/license, screenshots/demo.
 
 ## Upcoming milestone — React frontend
-Build the React catalogue, comparison, and history views. Use TanStack Query for API requests and retrieve all pages of history for the selected product, store, and period before calculating complete-period statistics with decimal-safe arithmetic. Clearly label observations as historical and preserve honest empty or sparse-data states.
+Frontend catalogue, comparison, history, chart, statistics, and chart-loading optimization milestones are complete. Remaining work is deployment, end-to-end verification, and portfolio documentation.
 
 ## Collaboration workflow
 1. Plan and approve one task and its acceptance criteria in ChatGPT.

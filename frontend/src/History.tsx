@@ -1,11 +1,17 @@
+import { lazy, Suspense } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import {
   fetchHistory,
   type HistoryPeriod,
   type Store,
 } from './api'
-import { PriceHistoryChart } from './PriceHistoryChart'
 import { calculatePriceStatistics } from './priceStatistics'
+
+const PriceHistoryChart = lazy(() =>
+  import('./PriceHistoryChart').then((module) => ({
+    default: module.PriceHistoryChart,
+  })),
+)
 
 const periods: { value: HistoryPeriod; label: string }[] = [
   { value: '30d', label: '30 days' },
@@ -126,7 +132,15 @@ export function HistorySection({
               </dl>
             </div>
           )}
-          <PriceHistoryChart observations={observations} />
+          <Suspense
+            fallback={
+              <p className="chart-loading status" role="status">
+                Loading interactive price chart...
+              </p>
+            }
+          >
+            <PriceHistoryChart observations={observations} />
+          </Suspense>
           <ol className="history-list">
             {observations.map((observation) => (
               <li key={observation.sourceObservationId}>
