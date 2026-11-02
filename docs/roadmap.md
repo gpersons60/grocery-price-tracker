@@ -40,7 +40,8 @@ Build maintainable, scalable foundations while keeping the MVP intentionally sma
 
 ## Week 3 — Frontend, deployment, and portfolio polish
 - [x] Build the first React frontend milestone: Vite/React scaffolding, `/products` API integration, and searchable catalogue with historical-observation labeling.
-- [ ] Build comparison/history UI and dated-observation views.
+- [x] Build the React store comparison milestone with complete store coverage and historical observation labeling.
+- [ ] Build history UI and dated-observation views.
 - [ ] Add TanStack Query caching and time-filter behavior.
 - [ ] Deploy frontend to private S3 behind CloudFront; connect public API.
 - [ ] Verify complete live system; troubleshoot reliability, security, and reasonable AWS costs.
