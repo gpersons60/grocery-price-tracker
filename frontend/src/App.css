@@ -1,0 +1,163 @@
+#root {
+  min-height: 100vh;
+}
+
+.app-shell {
+  width: min(1120px, calc(100% - 2rem));
+  margin: 0 auto;
+  padding: 3.5rem 0 5rem;
+}
+
+.hero {
+  max-width: 680px;
+  margin-bottom: 3rem;
+}
+
+.eyebrow {
+  margin: 0 0 0.6rem;
+  color: #26735d;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+h1,
+h2,
+p {
+  margin-top: 0;
+}
+
+h1 {
+  margin-bottom: 1rem;
+  color: #183c36;
+  font-size: clamp(2.4rem, 6vw, 4.7rem);
+  letter-spacing: -0.05em;
+  line-height: 0.98;
+}
+
+.intro {
+  max-width: 560px;
+  color: #5b6d6a;
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+.catalogue {
+  padding: clamp(1.25rem, 4vw, 2.5rem);
+  border: 1px solid #dfe7df;
+  border-radius: 1.25rem;
+  background: #fff;
+  box-shadow: 0 1rem 2.5rem rgb(31 65 54 / 8%);
+}
+
+.catalogue-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.catalogue-heading h2 {
+  margin-bottom: 0;
+  color: #183c36;
+  font-size: clamp(1.5rem, 3vw, 2.1rem);
+}
+
+.result-count {
+  color: #6b7d79;
+  font-size: 0.9rem;
+}
+
+.search-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #405652;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.search-input {
+  width: 100%;
+  margin-bottom: 2rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid #b9cbc3;
+  border-radius: 0.6rem;
+  color: #233238;
+  background: #fbfdfb;
+}
+
+.search-input:focus {
+  border-color: #26735d;
+  outline: 3px solid rgb(38 115 93 / 18%);
+}
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+  gap: 1rem;
+}
+
+.product-card {
+  min-height: 9rem;
+  padding: 1.15rem;
+  border: 1px solid #e1e9e3;
+  border-radius: 0.8rem;
+  background: #f9fbf8;
+}
+
+.product-card h2 {
+  margin-bottom: 1.5rem;
+  color: #234b42;
+  font-size: 1.05rem;
+  line-height: 1.35;
+}
+
+.barcode {
+  margin-bottom: 0;
+  color: #6b7d79;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 0.8rem;
+}
+
+.status {
+  padding: 1rem;
+  border-radius: 0.6rem;
+  color: #5b6d6a;
+  background: #f1f6f1;
+}
+
+.status-error {
+  color: #8d3939;
+  background: #fff1f1;
+}
+
+.status-error p {
+  margin-bottom: 0.8rem;
+}
+
+button {
+  padding: 0.6rem 0.9rem;
+  border: 0;
+  border-radius: 0.45rem;
+  color: #fff;
+  background: #26735d;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+button:hover {
+  background: #1d5b4a;
+}
+
+@media (max-width: 560px) {
+  .app-shell {
+    padding-top: 2rem;
+  }
+
+  .catalogue-heading {
+    align-items: start;
+    flex-direction: column;
+  }
+}
