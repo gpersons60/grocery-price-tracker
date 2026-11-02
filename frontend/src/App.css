@@ -347,6 +347,28 @@ button:hover {
   list-style: none;
 }
 
+.chart-container {
+  width: 100%;
+  margin-bottom: 1.5rem;
+}
+
+.chart-tooltip {
+  display: grid;
+  gap: 0.25rem;
+  padding: 0.7rem 0.8rem;
+  border: 1px solid #dfe7df;
+  border-radius: 0.5rem;
+  color: #233238;
+  background: #fff;
+  box-shadow: 0 0.4rem 1rem rgb(31 65 54 / 12%);
+  font-size: 0.85rem;
+}
+
+.chart-tooltip span {
+  color: #26735d;
+  font-weight: 700;
+}
+
 .history-list li {
   display: flex;
   justify-content: space-between;

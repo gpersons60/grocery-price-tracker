@@ -4,6 +4,7 @@ import {
   type HistoryPeriod,
   type Store,
 } from './api'
+import { PriceHistoryChart } from './PriceHistoryChart'
 
 const periods: { value: HistoryPeriod; label: string }[] = [
   { value: '30d', label: '30 days' },
@@ -86,16 +87,19 @@ export function HistorySection({
       )}
 
       {historyQuery.isSuccess && observations.length > 0 && (
-        <ol className="history-list">
-          {observations.map((observation) => (
-            <li key={observation.sourceObservationId}>
-              <span>{observation.observedDate}</span>
-              <strong>
-                {observation.price} {observation.currency}
-              </strong>
-            </li>
-          ))}
-        </ol>
+        <>
+          <PriceHistoryChart observations={observations} />
+          <ol className="history-list">
+            {observations.map((observation) => (
+              <li key={observation.sourceObservationId}>
+                <span>{observation.observedDate}</span>
+                <strong>
+                  {observation.price} {observation.currency}
+                </strong>
+              </li>
+            ))}
+          </ol>
+        </>
       )}
     </section>
   )
