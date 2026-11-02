@@ -7,7 +7,9 @@ import {
   type Observation,
   type Product,
   type Store,
+  type HistoryPeriod,
 } from './api'
+import { HistorySection } from './History'
 import './App.css'
 
 function ProductCard({
@@ -35,36 +37,47 @@ function ProductCard({
 function ComparisonCard({
   store,
   observation,
+  isSelected,
+  onSelect,
 }: {
   store: Store
   observation: Observation | undefined
+  isSelected: boolean
+  onSelect: () => void
 }) {
   return (
-    <article className="comparison-card">
-      <div className="store-heading">
-        <h3>{store.name}</h3>
-        <p>{store.address}</p>
-      </div>
+    <button
+      className={`comparison-card${isSelected ? ' comparison-card-selected' : ''}`}
+      type="button"
+      aria-pressed={isSelected}
+      onClick={onSelect}
+    >
+      <span className="store-heading">
+        <span className="store-name">{store.name}</span>
+        <span className="store-address">{store.address}</span>
+      </span>
       {observation ? (
-        <div className="observation">
-          <p className="historical-label">Historical observation</p>
-          <p className="price">
+        <span className="observation">
+          <span className="historical-label">Historical observation</span>
+          <span className="price">
             {observation.price} {observation.currency}
-          </p>
-          <p className="observation-date">
+          </span>
+          <span className="observation-date">
             Observed on {observation.observedDate}
-          </p>
-        </div>
+          </span>
+        </span>
       ) : (
-        <p className="no-price">No recorded price</p>
+        <span className="no-price">No recorded price</span>
       )}
-    </article>
+    </button>
   )
 }
 
 function App() {
   const [search, setSearch] = useState('')
   const [selectedBarcode, setSelectedBarcode] = useState<string>()
+  const [selectedStoreId, setSelectedStoreId] = useState<string>()
+  const [historyPeriod, setHistoryPeriod] = useState<HistoryPeriod>('90d')
   const productsQuery = useQuery({
     queryKey: ['products'],
     queryFn: fetchProducts,
@@ -219,6 +232,8 @@ function App() {
                   <ComparisonCard
                     key={store.id}
                     store={store}
+                    isSelected={store.id === selectedStoreId}
+                    onSelect={() => setSelectedStoreId(store.id)}
                     observation={comparisonQuery.data.stores.find(
                       (observation) => observation.store.id === store.id,
                     )}
@@ -228,6 +243,20 @@ function App() {
             )}
         </section>
       )}
+
+      {selectedProduct &&
+        selectedStoreId &&
+        storesQuery.data &&
+        storesQuery.data.some((store) => store.id === selectedStoreId) && (
+          <HistorySection
+            barcode={selectedProduct.barcode}
+            store={
+              storesQuery.data.find((store) => store.id === selectedStoreId)!
+            }
+            period={historyPeriod}
+            onPeriodChange={setHistoryPeriod}
+          />
+        )}
     </main>
   )
 }
