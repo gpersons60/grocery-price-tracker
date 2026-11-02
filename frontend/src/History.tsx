@@ -5,6 +5,7 @@ import {
   type Store,
 } from './api'
 import { PriceHistoryChart } from './PriceHistoryChart'
+import { calculatePriceStatistics } from './priceStatistics'
 
 const periods: { value: HistoryPeriod; label: string }[] = [
   { value: '30d', label: '30 days' },
@@ -34,6 +35,10 @@ export function HistorySection({
       left.observedDate.localeCompare(right.observedDate) ||
       left.sourceObservationId.localeCompare(right.sourceObservationId),
   )
+  const statistics =
+    historyQuery.isSuccess && observations.length > 0
+      ? calculatePriceStatistics(observations)
+      : null
 
   return (
     <section className="history" aria-labelledby="history-heading">
@@ -88,6 +93,39 @@ export function HistorySection({
 
       {historyQuery.isSuccess && observations.length > 0 && (
         <>
+          {statistics && (
+            <div className="statistics" aria-label="Historical price statistics">
+              <p className="statistics-intro">
+                Complete-period statistics for {period} historical
+                observations at this store. These are not current prices.
+              </p>
+              <dl className="statistics-grid">
+                <div>
+                  <dt>Latest recorded price</dt>
+                  <dd>
+                    {statistics.latestPrice} EUR
+                    <span>Observed on {statistics.latestObservedDate}</span>
+                  </dd>
+                </div>
+                <div>
+                  <dt>Minimum recorded price</dt>
+                  <dd>{statistics.minimumPrice} EUR</dd>
+                </div>
+                <div>
+                  <dt>Maximum recorded price</dt>
+                  <dd>{statistics.maximumPrice} EUR</dd>
+                </div>
+                <div>
+                  <dt>Average recorded price</dt>
+                  <dd>{statistics.meanPrice} EUR</dd>
+                </div>
+                <div>
+                  <dt>Observation count</dt>
+                  <dd>{statistics.observationCount}</dd>
+                </div>
+              </dl>
+            </div>
+          )}
           <PriceHistoryChart observations={observations} />
           <ol className="history-list">
             {observations.map((observation) => (

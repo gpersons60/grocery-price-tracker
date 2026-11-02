@@ -352,6 +352,52 @@ button:hover {
   margin-bottom: 1.5rem;
 }
 
+.statistics {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  border: 1px solid #e1e9e3;
+  border-radius: 0.8rem;
+  background: #f9fbf8;
+}
+
+.statistics-intro {
+  margin-bottom: 1rem;
+  color: #6b7d79;
+  font-size: 0.85rem;
+}
+
+.statistics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1rem;
+  margin: 0;
+}
+
+.statistics-grid div {
+  min-width: 0;
+}
+
+.statistics-grid dt {
+  margin-bottom: 0.3rem;
+  color: #6b7d79;
+  font-size: 0.75rem;
+}
+
+.statistics-grid dd {
+  margin: 0;
+  color: #183c36;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.statistics-grid dd span {
+  display: block;
+  margin-top: 0.25rem;
+  color: #6b7d79;
+  font-size: 0.75rem;
+  font-weight: 400;
+}
+
 .chart-tooltip {
   display: grid;
   gap: 0.25rem;

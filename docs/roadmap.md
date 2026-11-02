@@ -43,7 +43,7 @@ Build maintainable, scalable foundations while keeping the MVP intentionally sma
 - [x] Build the React store comparison milestone with complete store coverage and historical observation labeling.
 - [x] Build Milestone 3A: historical price API integration, complete pagination, and period selection.
 - [x] Build Milestone 3B: interactive historical price charts.
-- [ ] Add historical statistics.
+- [x] Build Milestone 3C: complete-period historical price statistics.
 - [ ] Add TanStack Query caching and time-filter behavior.
 - [ ] Deploy frontend to private S3 behind CloudFront; connect public API.
 - [ ] Verify complete live system; troubleshoot reliability, security, and reasonable AWS costs.
