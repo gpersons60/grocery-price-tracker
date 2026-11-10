@@ -10,6 +10,7 @@ import {
   type HistoryPeriod,
 } from './api'
 import { HistorySection } from './History'
+import { selectProduct } from './selection'
 import './App.css'
 
 function ProductCard({
@@ -81,10 +82,12 @@ function App() {
   const productsQuery = useQuery({
     queryKey: ['products'],
     queryFn: fetchProducts,
+    staleTime: 60 * 60 * 1000,
   })
   const storesQuery = useQuery({
     queryKey: ['stores'],
     queryFn: fetchStores,
+    staleTime: 60 * 60 * 1000,
   })
   const selectedProduct = productsQuery.data?.find(
     (product) => product.barcode === selectedBarcode,
@@ -98,7 +101,18 @@ function App() {
       return fetchComparison(selectedBarcode)
     },
     enabled: Boolean(selectedBarcode),
+    staleTime: 15 * 60 * 1000,
   })
+
+  function handleProductSelect(barcode: string) {
+    const selection = selectProduct(
+      selectedBarcode,
+      selectedStoreId,
+      barcode,
+    )
+    setSelectedBarcode(selection.barcode)
+    setSelectedStoreId(selection.storeId)
+  }
 
   const searchTerm = search.trim().toLocaleLowerCase()
   const filteredProducts = (productsQuery.data ?? []).filter((product) => {
@@ -168,7 +182,7 @@ function App() {
                     key={product.barcode}
                     product={product}
                     isSelected={product.barcode === selectedBarcode}
-                    onSelect={() => setSelectedBarcode(product.barcode)}
+                    onSelect={() => handleProductSelect(product.barcode)}
                   />
                 ))}
               </div>

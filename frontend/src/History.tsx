@@ -34,6 +34,7 @@ export function HistorySection({
   const historyQuery = useQuery({
     queryKey: ['history', barcode, store.id, period],
     queryFn: ({ signal }) => fetchHistory(barcode, store.id, period, 100, signal),
+    staleTime: 5 * 60 * 1000,
   })
 
   const observations = [...(historyQuery.data?.observations ?? [])].sort(
@@ -76,9 +77,15 @@ export function HistorySection({
         ))}
       </fieldset>
 
-      {historyQuery.isLoading && (
+      {historyQuery.isPending && (
         <p className="status" role="status">
           Loading price history...
+        </p>
+      )}
+
+      {historyQuery.isFetching && !historyQuery.isPending && (
+        <p className="status" role="status">
+          Updating price history...
         </p>
       )}
 

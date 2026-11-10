@@ -1,6 +1,6 @@
 # Grocery Price Tracker — Roadmap and Progress
 
-Status: Backend ingestion and read-only API complete; frontend next. Updated 2026-11-01.
+Status: Backend ingestion, read-only API, and frontend Milestone 4B complete; deployment and portfolio documentation remain. Updated 2026-11-07.
 
 ## Timeline and working agreement
 Target: 2–3 focused development weeks, with implementation, testing, review and deployment. Schedule is a target, not a guarantee. Preserve the agreed MVP; streamline implementation and defer deep theory before proposing scope changes. Continue LeetCode/interview preparation separately.
@@ -46,12 +46,13 @@ Build maintainable, scalable foundations while keeping the MVP intentionally sma
 - [x] Build Milestone 3C: complete-period historical price statistics.
 - [x] Add TanStack Query caching and time-filter behavior.
 - [x] Build Milestone 4A: lazy-load chart code and split Recharts from the initial bundle.
+- [x] Build Milestone 4B: query caching and pre-deployment reliability review (selection isolation, pagination, states, responsiveness, and accessibility).
 - [ ] Deploy frontend to private S3 behind CloudFront; connect public API.
 - [ ] Verify complete live system; troubleshoot reliability, security, and reasonable AWS costs.
 - [ ] Finish README with architecture, setup/deployment instructions, testing, limitations, data attribution/license, screenshots/demo.
 
 ## Upcoming milestone — React frontend
-Frontend catalogue, comparison, history, chart, statistics, and chart-loading optimization milestones are complete. Remaining work is deployment, end-to-end verification, and portfolio documentation.
+Frontend catalogue, comparison, history, chart, statistics, chart-loading optimization, and Milestone 4B reliability review are complete. Remaining work is deployment, end-to-end verification, and portfolio documentation.
 
 ## Collaboration workflow
 1. Plan and approve one task and its acceptance criteria in ChatGPT.
@@ -61,7 +62,7 @@ Frontend catalogue, comparison, history, chart, statistics, and chart-loading op
 5. Update this roadmap after meaningful milestones and record deferred learning topics here.
 
 ## Current blockers
-None reported for the completed backend and API milestones. Frontend implementation remains the next planned work.
+None reported for the completed backend and API milestones. Frontend deployment and live-system verification remain the next planned work.
 
 ## Concepts to revisit later
 AWS IAM permission details, DynamoDB conditional writes/GSI consistency and pagination, Lambda packaging/performance, serverless cost tradeoffs, REST error contracts, browser query caching, CDN caching, and deeper testing/CI/CD practices. Add specific gaps as they arise.
