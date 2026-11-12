@@ -1,6 +1,6 @@
 # Grocery Price Tracker — Engineering Decisions
 
-Status: Initial decisions approved; update deliberately if evidence changes. Updated 2026-10-28.
+Status: MVP decisions implemented; manual deployment and end-to-end verification completed. Updated 2026-11-12.
 
 | Decision | Rationale |
 | --- | --- |
@@ -18,13 +18,13 @@ Status: Initial decisions approved; update deliberately if evidence changes. Upd
 | React + TanStack Query | Familiar client UI and practical server-state caching. |
 | Private S3 + CloudFront | Demonstrates static asset delivery and basic cloud distribution securely. |
 | Focused tests, feature branches, GitHub documentation | Preserves fundamental software engineering quality for a portfolio. |
-| Manual AWS deployment for MVP; defer SAM and GitHub Actions | Prioritize core AWS concepts within 2–3 weeks. Document setup for reproducibility. |
+| Manual AWS deployment for MVP; defer SAM and GitHub Actions | Prioritize core AWS concepts within 2–3 weeks. Document setup and future frontend publishing for reproducibility. |
 | No automatic source-deletion reconciliation initially | Avoid dangerous deletes/complex sync; disclose limitation. |
 | No accounts, alerts, WebSockets, Kafka, or complex analytics | These are outside the approved MVP and better suited to later projects. |
 | Fixed Nancy catalogue for the MVP | A version-controlled set of 17 recognizable packaged products and 5 physical store IDs keeps the first ingestion and user experience focused and reproducible. |
 | Uneven store coverage is retained | Open Prices observations are concentrated in a few Nancy locations and dates; we preserve source store IDs rather than merging suspected duplicate OSM locations or inventing coverage. |
 | 90-day history is the default chart window | Analysis showed useful recent coverage for many candidates while still requiring honest empty or sparse states; `1y` and `all` remain available for older observations. |
-| Frontend aggregates paginated history before period statistics | The API returns page-scoped statistics to keep responses bounded; the frontend must retrieve every page for the selected product, store, and period and calculate complete-period statistics with decimal-safe arithmetic. |
+| Frontend aggregates paginated history before period statistics | The API returns page-scoped statistics to keep responses bounded; the frontend retrieves every page for the selected product, store, and period and calculates complete-period statistics with decimal-safe arithmetic. |
 
 ## Catalogue and observation caveats
 
@@ -33,16 +33,14 @@ The curated catalogue is intentionally fixed in
 and uses source physical store IDs as strings. Suspected duplicate locations remain
 separate until there is evidence and an explicit identity-mapping decision.
 
-Barcode-based `PRODUCT` observations may have a null `price_per`. A missing value is
-reported as source data and must not, by itself, cause an observation to be rejected.
-The catalogue does not assume that a missing `price_per` means `UNIT`; that validation
-decision belongs to a later ingestion implementation.
+Barcode-based `PRODUCT` observations may have a null `price_per`; the implemented
+pipeline uses the positive `price` field for the curated historical observations.
+Observation type is validated as `PRODUCT`, and a missing `price_per` is not reclassified
+as `UNIT`.
 
-## Pending implementation choices
-- Specific source column mapping and final catalog/location identifiers.
-- Exact requirements/package versions and Lambda packaging method.
-- Simple chart library and visual UI specifics.
-- AWS deployment configuration and practical cost limits.
+## Remaining decisions
+- Whether to add a source-code `LICENSE` file remains pending.
+- Future infrastructure automation, monitoring depth, and broader geographic/data scope require separate approval.
 
 ## Working strategy
 - Maintain approved MVP scope; streamline implementation when schedule pressure occurs rather than automatically dropping features.

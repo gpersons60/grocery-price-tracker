@@ -1,78 +1,153 @@
-# grocery-price-tracker
-Serverless grocery price comparison and historical price tracking application
+# Grocery Price Tracker
 
-## Manual initial data import
+Grocery Price Tracker is a small serverless application for exploring **historical observed grocery prices** in Nancy, France. It is designed as an internship portfolio project demonstrating a practical data pipeline, DynamoDB access patterns, a read-only REST API, and a React frontend.
 
-The importer defaults to a dry run. Review its counts first, then add `--apply`
-to write the curated products and normalized observations to DynamoDB:
+> **Historical-data limitation:** prices come from crowdsourced Open Prices observations. They are dated records, not live shelf prices, guaranteed current prices, sale confirmations, or retailer rankings.
 
-```powershell
-.venv\Scripts\python.exe -m backend.ingestion.import_data data\raw\prices.parquet `
-  --profile grocery-tracker --region us-east-2 `
-  --products-table Products --observations-table PriceObservations --apply
+## Live demo
+
+**[Open the deployed Grocery Price Tracker](https://d1jzmtqwkf5hmn.cloudfront.net)**
+
+The demo uses the deployed read-only API at `https://apgc1a8kvi.execute-api.us-east-2.amazonaws.com`.
+
+## Screenshots
+
+![Product catalogue](docs/screenshots/catalogue.png)
+
+![Store comparison](docs/screenshots/store-comparison.png)
+
+![Historical price chart](docs/screenshots/price-history.png)
+
+## Key features
+
+- Browse and search a curated catalogue of packaged products by name or barcode.
+- Compare the latest available **observed** price for each supported physical store.
+- View 30-day, 90-day, one-year, or all-time observation history.
+- Retrieve paginated history and calculate complete-period statistics in the frontend.
+- Show observation dates, store identity, empty states, loading states, and API errors explicitly.
+- Preserve decimal-safe prices and distinguish observation dates from source update timestamps.
+- Ingest only curated Nancy products and physical store IDs from the daily Open Prices Parquet export.
+- Re-run ingestion safely through source-ID idempotency and newer-source-version corrections.
+
+## Technology stack
+
+- **Frontend:** React, TypeScript, Vite, TanStack Query, Recharts, and `big.js`
+- **Backend:** Python, AWS Lambda, Boto3, PyArrow, and pytest
+- **API:** API Gateway HTTP API with one read-only Lambda and four routes
+- **Storage:** DynamoDB `Products` and `PriceObservations` tables plus the `ProductStoreHistoryIndex` GSI
+- **Ingestion:** EventBridge Scheduler invokes a daily Lambda batch
+- **Hosting:** private S3 bucket delivered through CloudFront Origin Access Control (OAC)
+
+## Architecture and data flow
+
+```text
+Open Prices daily Parquet export
+              |
+EventBridge daily schedule
+              v
+      Python ingestion Lambda
+   filter -> validate -> normalize
+    -> idempotent upsert/correction
+              |
+              v
+  DynamoDB PriceObservations
+  DynamoDB Products (curated)
+              ^
+              |
+        API Lambda (read-only)
+              ^
+              |
+       API Gateway HTTP API
+              ^
+              |
+React + TanStack Query in browser
+              ^
+              |
+   CloudFront <- private S3 site assets
 ```
 
-The import is safe to rerun: existing products are skipped and observations use
-the persistence layer's idempotent correction rules. The command does not delete
-records or create tables.
+The ingestion stage streams Parquet batches, filters by curated barcode and physical store ID, validates `PRODUCT` observations in EUR, and writes decimal-safe values. The API reads the curated catalogue and history index. The frontend follows continuation tokens until all history pages for a selected product, store, and period are loaded, then computes complete-period statistics.
 
-## Lambda container image
+## Engineering highlights
 
-The ingestion Lambda downloads the latest Open Prices Parquet export and reads
-these required environment variables: `PRODUCTS_TABLE`, `DYNAMODB_TABLE`, and
-`AWS_REGION`. Build the image for Lambda's x86_64 runtime from the repository
-root:
+- Source observation ID is the primary persistence identity, supporting idempotent imports.
+- Newer source update timestamps can correct existing observations; stale versions do not overwrite newer data.
+- Physical store IDs remain distinct rather than being merged by retail-chain name.
+- DynamoDB access patterns use a product/store history GSI and bounded API pages.
+- Decimal values remain strings at the JSON boundary and are aggregated without binary floating-point arithmetic.
+- Missing observations are shown as missing; the application does not interpolate dates or infer current prices.
+- Source deletions are not automatically reconciled, so retained records may outlive upstream deletions.
+
+## Local development
+
+### Prerequisites
+
+- Python 3.14 or a compatible supported Python version
+- Node.js and npm compatible with the versions in `frontend/package-lock.json`
+- Docker Desktop only if building or running the ingestion Lambda container
+- AWS credentials only for commands that intentionally access deployed DynamoDB/Lambda resources
+
+### Backend setup and tests
+
+From the repository root:
 
 ```powershell
-docker buildx build --platform linux/amd64 --provenance=false --load `
-  -t grocery-ingestion .
+py -3.14 -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r backend\requirements.txt
+.\.venv\Scripts\python.exe -m pytest backend\tests
 ```
 
-Run the handler locally with Docker's Lambda runtime interface after supplying
-the table and region environment variables:
+Using the virtual environment's Python executable directly also works when PowerShell execution policy blocks activation scripts. The local importer defaults to a dry run. A real import requires an explicit `--apply` flag and AWS permissions; it is not needed to run the test suite.
+
+### Frontend setup, development, and tests
 
 ```powershell
-docker run --rm -p 9000:8080 `
-  -e PRODUCTS_TABLE=Products -e DYNAMODB_TABLE=PriceObservations `
-  -e AWS_REGION=us-east-2 grocery-ingestion
+cd frontend
+npm.cmd ci
+Copy-Item .env.example .env.local
+# Set VITE_API_BASE_URL in .env.local to the API base URL.
+npm.cmd run dev
 ```
 
-The local container invocation requires AWS credentials with permission to write
-the configured tables; it is not a dry run.
+Run the frontend checks:
 
-## Read-only API
+```powershell
+npm.cmd test
+npm.cmd run lint
+npm.cmd run build
+```
 
-The API Lambda uses API Gateway HTTP API payload format 2.0 and reads the
-`PRODUCTS_TABLE` and `DYNAMODB_TABLE` environment variables. It uses the
-standard Boto3 credential chain and does not create or modify AWS resources.
+## API summary
 
-All successful responses have the shape `{"data": ...}`. Errors have the shape
-`{"error": {"code": "...", "message": "..."}}`.
+All successful responses are wrapped as `{"data": ...}`. Errors use `{"error": {"code": "...", "message": "..."}}`.
 
-| Method and path | Response |
+| Method and path | Purpose |
 | --- | --- |
-| `GET /products` | Curated products with `barcode` and `name`. |
-| `GET /stores` | Curated physical stores with `id`, `name`, and `address`. |
-| `GET /products/{barcode}/history?storeId={id}&period=90d&pageSize=100&continuationToken=...` | Ordered observations and page-scoped statistics. `period` is `30d`, `90d`, `1y`, or `all`; `90d` is the default. `storeId` is required. `pageSize` defaults to 100 and is limited to 1000. |
-| `GET /products/{barcode}/comparison` | The newest indexed observation for each curated store with data. |
+| `GET /products` | Return the curated product catalogue. |
+| `GET /stores` | Return curated physical stores, IDs, names, and addresses. |
+| `GET /products/{barcode}/comparison` | Return the newest available observation for each supported store with data. |
+| `GET /products/{barcode}/history?storeId={id}&period=90d&pageSize=100&continuationToken=...` | Return ordered observations and page-scoped statistics for `30d`, `90d`, `1y`, or `all`. |
 
-Prices and statistics are JSON strings (for example `"1.230"`) so decimal
-values are not converted through binary floating point. Each observation
-includes its observed date, source observation ID, and source update timestamp
-when available. These are historical observations, not live shelf prices.
-Empty history returns HTTP 200 with an empty array and null statistics; invalid
-parameters return 400 and an unknown barcode returns 404. Product catalogue
-scans and history queries handle DynamoDB pagination. History returns at most one
-page per request; when more observations exist, repeat the request with the
-opaque `continuationToken`. The token is bound to the barcode, store, period,
-date bounds, and page size, and malformed or mismatched tokens return 400.
-History statistics (`latestPrice`, minimum, maximum, mean, and count) describe
-only the observations in the returned page, not the entire requested period.
-The frontend should retrieve all available pages for the selected product, store,
-and period, then calculate complete-period statistics with decimal-safe
-arithmetic; it must not treat a single page's statistics as period-wide.
-History and comparison
-reads use the `ProductStoreHistoryIndex` GSI, whose reads are eventually
-consistent, so a newly ingested observation may be briefly absent. Retained
-observations may also outlive upstream deletions because deletion reconciliation
-is intentionally deferred.
+History requires `storeId`, defaults to `90d`, and may return an opaque continuation token. The frontend retrieves every page before displaying complete-period statistics. Empty history is a successful `200` response with no observations and unavailable statistics; invalid requests return `400`, unknown products return `404`, and unexpected failures return `500`.
+
+## Deployment
+
+The current MVP was deployed manually in `us-east-2`: the frontend is built with Vite and uploaded to a private S3 bucket, and CloudFront serves it through OAC. API Gateway, Lambda, DynamoDB, and EventBridge provide the backend and scheduled ingestion.
+
+See [the deployment runbook](docs/deployment.md) for reproducible read-only checks, future frontend publishing commands, cache headers, the restricted bucket policy shape, and optional invalidation. The design rationale is documented in [the architecture](docs/architecture.md), [the engineering decisions](docs/decisions.md), and [the requirements](docs/requirements.md).
+
+## Known limitations
+
+- Coverage is intentionally limited to a curated set of products and physical stores in Nancy, France.
+- Open Prices observations are crowdsourced and historical; availability, age, and store coverage are uneven.
+- The application does not provide live prices, promotions, deal rankings, predictions, or retailer scraping.
+- Upstream source deletion/retraction reconciliation is deferred.
+- DynamoDB GSI reads are eventually consistent, so a newly ingested observation may be briefly absent.
+- AWS deployment remains manual for this MVP; AWS SAM and GitHub Actions are intentionally deferred.
+- No source-code `LICENSE` file has been added; that licensing decision remains pending.
+
+## Data attribution and licensing
+
+Price observations are sourced from **[Open Prices](https://prices.openfoodfacts.org/)**, an Open Food Facts project. The daily Parquet dataset used by this project is published at **[Open Prices on Hugging Face](https://huggingface.co/datasets/openfoodfacts/open-prices)**. Open Prices documents its data access and attribution guidance in **[its data guide](https://openfoodfacts.github.io/open-prices/guides/data/)**.
+
+Open Prices data is subject to the **[Open Database License (ODbL)](https://opendatacommons.org/licenses/odbl/)**. Reusers should review the official **[Open Food Facts licensing guidance](https://openfoodfacts.github.io/documentation/docs/Product-Opener/api/tutorials/license-be-on-the-legal-side/)** and determine their own obligations for attribution, share-alike, and any derived database. This README records the source and links; it does not make a legal-compliance determination.

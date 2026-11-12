@@ -1,6 +1,6 @@
 # Grocery Price Comparison & History Tracker — Requirements
 
-Status: MVP concept approved; backend ingestion and read-only API implemented. Updated 2026-11-01.
+Status: MVP implemented and deployed; manual end-to-end verification completed. Updated 2026-11-12.
 
 ## Goal and users
 Build a small, deployed serverless application that helps users compare real **historical observed** grocery prices and demonstrates practical AWS, data-pipeline, NoSQL, REST API, frontend, caching, testing, and Git skills for software engineering internship applications.
@@ -22,7 +22,7 @@ Authentication, user accounts, alerts, promotions/sale detection, deal rankings,
 ## Source and import behavior
 - Source: Open Prices daily Parquet data export; ingestion runs once per day.
 - Process only curated barcodes and physical location IDs.
-- Restrict to relevant positive `UNIT` product observations in EUR, with valid source IDs and observation dates. Validate actual source schema from a real export before finalizing mapping.
+- Restrict to relevant positive `PRODUCT` observations in EUR, with valid source IDs and observation dates. This matches the implemented source validation and the Open Prices schema examined for the project.
 - Preserve `sourceObservationId`, `barcode`, `storeId`, `observedDate`, `sourceUpdatedAt`, and decimal-safe price.
 - Re-importing the same unchanged source record must not duplicate it. A source record with a newer `updated` timestamp may correct an existing record; stale versions must not overwrite newer ones.
 - Failed downloads and write failures must be surfaced as failures; a valid import with zero new observations is a successful no-op.
@@ -46,5 +46,5 @@ Authentication, user accounts, alerts, promotions/sale detection, deal rankings,
 - A cloud ingestion run populates DynamoDB with useful real observations and subsequent runs do not create duplicates.
 - The four REST endpoints serve correct data, including history windows, timestamps, pagination, and empty/error states.
 - The React site can compare products, view history and statistics, and clearly identifies observations as historical.
-- The project is deployed, a reviewer can access a live demonstration, and the README explains setup, architecture, limitations, tests, and licensing attribution.
+- The project is deployed, a reviewer can access a live demonstration, and the README explains setup, architecture, limitations, tests, deployment, and licensing attribution.
 - Key tests run successfully and no credentials or downloaded datasets are committed.

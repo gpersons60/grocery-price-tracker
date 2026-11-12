@@ -271,6 +271,16 @@ function App() {
             onPeriodChange={setHistoryPeriod}
           />
         )}
+
+      <footer className="attribution" aria-label="Data attribution">
+        Historical price observations sourced from{' '}
+        <a href="https://prices.openfoodfacts.org/">Open Prices by Open Food Facts</a>
+        . Data is provided under the{' '}
+        <a href="https://opendatacommons.org/licenses/odbl/">
+          Open Database License (ODbL) 1.0
+        </a>
+        .
+      </footer>
     </main>
   )
 }

@@ -434,6 +434,34 @@ button:hover {
   color: #183c36;
 }
 
+.attribution {
+  max-width: 720px;
+  margin: 3rem auto 0;
+  padding-top: 1.25rem;
+  border-top: 1px solid #dfe7df;
+  color: #6b7d79;
+  font-size: 0.8rem;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.attribution a {
+  color: #26735d;
+  text-decoration: underline;
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.15em;
+}
+
+.attribution a:hover {
+  color: #1d5b4a;
+}
+
+.attribution a:focus-visible {
+  border-radius: 0.2rem;
+  outline: 3px solid rgb(38 115 93 / 28%);
+  outline-offset: 3px;
+}
+
 @media (max-width: 560px) {
   .app-shell {
     padding-top: 2rem;

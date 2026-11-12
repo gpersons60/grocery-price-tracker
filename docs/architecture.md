@@ -1,6 +1,6 @@
 # Grocery Price Tracker — Architecture
 
-Status: Approved high-level design, to be validated incrementally while building. Updated 2026-10-28.
+Status: Implemented MVP architecture; manual deployment and end-to-end verification completed. Updated 2026-11-12.
 
 ## Technology stack
 - Ingestion/REST backend: Python on AWS Lambda.
@@ -8,9 +8,9 @@ Status: Approved high-level design, to be validated incrementally while building
 - Dataset: Open Prices Parquet export; initially filter to curated products and physical stores in Nancy, France.
 - Database: Amazon DynamoDB (on-demand capacity), with two tables and a GSI.
 - HTTP: Amazon API Gateway HTTP API invoking one read-only API Lambda (four routes).
-- Frontend: React, with TanStack Query for client-side API caching and a history chart library chosen during implementation.
+- Frontend: React, with TanStack Query for client-side API caching and Recharts for historical price charts.
 - Static hosting: Private S3 bucket through CloudFront (use Origin Access Control).
-- Operations: CloudWatch logs/basic failure monitoring, least-privilege IAM, and a small AWS Budget alert (alert is NOT a spending cap).
+- Operations: CloudWatch logs/basic failure monitoring and least-privilege IAM. An AWS Budget alert is a recommended cost safeguard, not a verified deployed resource. Frontend publishing is manual; see [`deployment.md`](deployment.md).
 - Version control and testing: Git/GitHub, scoped feature branches and local automated tests. Manual cloud configuration/documentation for MVP; no AWS SAM or GitHub Actions initially.
 
 ## Data flow
@@ -83,9 +83,10 @@ The source observation ID is the primary identity for upsert. Use conditional wr
 - Credentials/config: use AWS IAM roles and environment configuration; no secrets in source control.
 - Frontend/CDN: TanStack Query provides application-level caching. CloudFront delivers static assets; no separate API cache is required.
 
-## Open questions to validate during implementation
-- Exact Open Prices export columns, null behavior, file size, and location ID format.
-- Final Nancy barcode/location shortlist from the feasibility sample.
-- Parquet dependency packaging and Lambda resource needs.
-- Exact decimal representation/precision and public API response JSON fields.
-- AWS account region, deployment steps, and budget safeguards.
+## Implemented deployment notes
+
+- The deployed region is `us-east-2`.
+- The React/Vite site is hosted from a private S3 bucket through CloudFront Origin Access Control.
+- The API is a public, read-only API Gateway HTTP API backed by Lambda.
+- The deployment is manual for the MVP; AWS SAM and GitHub Actions remain deferred.
+- Reproducible frontend publishing and read-only checks are documented in [`deployment.md`](deployment.md).

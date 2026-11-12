@@ -1,6 +1,6 @@
 # Grocery Price Tracker — Roadmap and Progress
 
-Status: Backend ingestion, read-only API, and frontend Milestone 4B complete; deployment and portfolio documentation remain. Updated 2026-11-07.
+Status: Backend ingestion, read-only API, frontend Milestone 4B, frontend deployment, and manual end-to-end verification complete. Portfolio documentation updated. Updated 2026-11-12.
 
 ## Timeline and working agreement
 Target: 2–3 focused development weeks, with implementation, testing, review and deployment. Schedule is a target, not a guarantee. Preserve the agreed MVP; streamline implementation and defer deep theory before proposing scope changes. Continue LeetCode/interview preparation separately.
@@ -20,8 +20,6 @@ Build maintainable, scalable foundations while keeping the MVP intentionally sma
 - [x] Local branch created: `feat/ingestion-setup`.
 - [x] Python 3.14.0 virtual environment created and activated as `.venv` in VS Code CMD.
 - [x] Local `.gitignore` created; `git status -sb` showed only `.gitignore` as untracked.
-- [ ] Copy and review repository foundation files from the prepared ZIP (this package).
-- [ ] Review current `git status -sb` and plan a documentation/setup commit when ready.
 
 ## Week 1 — Data pipeline and DynamoDB
 - [x] Inspect a real Open Prices Parquet export schema and sample records with a local Python utility.
@@ -47,12 +45,12 @@ Build maintainable, scalable foundations while keeping the MVP intentionally sma
 - [x] Add TanStack Query caching and time-filter behavior.
 - [x] Build Milestone 4A: lazy-load chart code and split Recharts from the initial bundle.
 - [x] Build Milestone 4B: query caching and pre-deployment reliability review (selection isolation, pagination, states, responsiveness, and accessibility).
-- [ ] Deploy frontend to private S3 behind CloudFront; connect public API.
-- [ ] Verify complete live system; troubleshoot reliability, security, and reasonable AWS costs.
-- [ ] Finish README with architecture, setup/deployment instructions, testing, limitations, data attribution/license, screenshots/demo.
+- [x] Deploy frontend to private S3 behind CloudFront with OAC and connect the public API.
+- [x] Manually verify the deployed frontend and four API endpoints end to end.
+- [x] Finish README and deployment documentation with architecture, setup, testing, limitations, screenshots, demo, and Open Prices attribution/licensing links.
 
-## Upcoming milestone — React frontend
-Frontend catalogue, comparison, history, chart, statistics, chart-loading optimization, and Milestone 4B reliability review are complete. Remaining work is deployment, end-to-end verification, and portfolio documentation.
+## Milestone 6 — Deployment and portfolio documentation
+Frontend catalogue, comparison, history, chart, statistics, chart-loading optimization, and Milestone 4B reliability review are complete. The frontend is deployed behind private S3 and CloudFront OAC, and the live frontend plus four API endpoints were manually verified. Documentation records the deployment procedure and remaining limitations without claiming automated production monitoring or additional unperformed tests.
 
 ## Collaboration workflow
 1. Plan and approve one task and its acceptance criteria in ChatGPT.
@@ -62,7 +60,7 @@ Frontend catalogue, comparison, history, chart, statistics, chart-loading optimi
 5. Update this roadmap after meaningful milestones and record deferred learning topics here.
 
 ## Current blockers
-None reported for the completed backend and API milestones. Frontend deployment and live-system verification remain the next planned work.
+None reported for the completed MVP. AWS deployment automation, broader monitoring, source-deletion reconciliation, and a source-code license remain deferred or pending decisions.
 
 ## Concepts to revisit later
 AWS IAM permission details, DynamoDB conditional writes/GSI consistency and pagination, Lambda packaging/performance, serverless cost tradeoffs, REST error contracts, browser query caching, CDN caching, and deeper testing/CI/CD practices. Add specific gaps as they arise.
